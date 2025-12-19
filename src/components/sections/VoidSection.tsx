@@ -1,98 +1,111 @@
+import { Mail, Image, Users, Rocket } from 'lucide-react';
+
 interface VoidSectionProps {
   progress: number;
   isActive: boolean;
 }
 
 export const VoidSection = ({ progress, isActive }: VoidSectionProps) => {
-  // Everything fades to black
-  const fadeOpacity = 1 - progress;
-  const textReveal = progress > 0.5 ? (progress - 0.5) * 2 : 0;
+  const fadeIn = Math.max(0, (progress - 0.2) / 0.6);
   
   return (
     <section 
-      className="h-screen flex items-center justify-center relative"
+      className="h-screen flex items-center justify-center relative px-4"
       style={{
         opacity: isActive ? 1 : 0,
-        transition: 'opacity 0.3s ease-out',
+        transition: 'opacity 0.5s ease-out',
       }}
     >
-      {/* Black overlay that fades in */}
+      {/* Main content card */}
       <div 
-        className="absolute inset-0 bg-void-black pointer-events-none"
+        className="glass rounded-2xl p-8 md:p-12 max-w-xl w-full relative overflow-hidden"
         style={{
-          opacity: progress * 0.95,
+          opacity: fadeIn,
+          transform: `translateY(${(1 - fadeIn) * 30}px)`,
+          transition: 'transform 0.3s ease-out',
         }}
-      />
-      
-      <div className="text-center relative z-10 px-4">
-        {/* Farewell message */}
-        <div 
-          style={{
-            opacity: textReveal,
-            transform: `scale(${0.8 + textReveal * 0.2})`,
-            transition: 'all 0.3s ease-out',
-          }}
-        >
-          <h2 className="font-display text-3xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6">
-            The Journey Continues...
-          </h2>
-          
-          <p className="text-muted-foreground font-body text-lg md:text-xl max-w-lg mx-auto mb-8 leading-relaxed">
-            Beyond the event horizon lies infinite possibility. 
-            Let's create something extraordinary together.
-          </p>
-          
-          {/* Contact CTA */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a 
-              href="mailto:hello@example.com"
-              className="btn-cosmic text-primary flex items-center gap-2"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="2" y="4" width="20" height="16" rx="2" />
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-              </svg>
-              Get In Touch
-            </a>
-            
-            <a 
-              href="#"
-              className="px-8 py-4 text-foreground font-display font-semibold uppercase tracking-wider hover:text-primary transition-colors flex items-center gap-2"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
-              </svg>
-              GitHub
-            </a>
+      >
+        {/* Corner accents */}
+        <div className="absolute top-0 left-0 w-8 h-8 border-l-2 border-t-2 border-primary/30 rounded-tl-2xl" />
+        <div className="absolute bottom-0 right-0 w-8 h-8 border-r-2 border-b-2 border-primary/30 rounded-br-2xl" />
+        
+        {/* Status bar */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-primary" />
+            <span className="font-body text-xs tracking-[0.15em] uppercase text-muted-foreground">
+              The Event Horizon // 100% Complete
+            </span>
           </div>
+          <Rocket className="w-4 h-4 text-muted-foreground" />
+        </div>
+        
+        {/* Divider */}
+        <div className="w-full h-px bg-border/30 mb-8" />
+        
+        {/* Main heading */}
+        <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-light text-foreground mb-2">
+          Let's build
+        </h2>
+        <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-light mb-8">
+          <span className="text-foreground">the </span>
+          <span className="text-primary/60">future.</span>
+        </h2>
+        
+        <p className="text-muted-foreground font-body text-sm md:text-base leading-relaxed mb-8 max-w-md">
+          The journey doesn't end here. I am currently open for new collaborations starting Q1 2025.
+        </p>
+        
+        {/* Email CTA */}
+        <div className="flex items-center gap-4 mb-8">
+          <button className="flex items-center gap-3 bg-primary/20 hover:bg-primary/30 border border-primary/30 px-6 py-3 rounded-lg transition-colors group">
+            <Mail className="w-5 h-5 text-foreground" />
+            <span className="font-display text-sm tracking-wider text-foreground">
+              hello@portfolio.design
+            </span>
+          </button>
           
-          {/* Social links */}
-          <div className="mt-12 flex items-center justify-center gap-6">
-            {['LinkedIn', 'Twitter', 'Dribbble'].map((social) => (
-              <a 
-                key={social}
-                href="#"
-                className="text-muted-foreground hover:text-primary transition-colors font-body text-sm uppercase tracking-wider"
-              >
-                {social}
-              </a>
-            ))}
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-px bg-border/50" />
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-green-500" />
+              <span className="font-body text-xs text-muted-foreground">Available for work</span>
+            </div>
           </div>
         </div>
         
-        {/* Final message at the very end */}
-        {progress > 0.9 && (
-          <div 
-            className="absolute inset-0 flex items-center justify-center"
-            style={{
-              opacity: (progress - 0.9) * 10,
-            }}
-          >
-            <p className="font-display text-xl text-muted-foreground tracking-widest">
-              See you among the stars ✨
+        {/* Divider */}
+        <div className="w-full h-px bg-border/30 mb-6" />
+        
+        {/* Social links and footer */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <button className="p-2 hover:bg-muted/30 rounded-lg transition-colors">
+              <Image className="w-5 h-5 text-muted-foreground" />
+            </button>
+            <button className="p-2 hover:bg-muted/30 rounded-lg transition-colors">
+              <Users className="w-5 h-5 text-muted-foreground" />
+            </button>
+            <button className="p-2 hover:bg-muted/30 rounded-lg transition-colors">
+              <Rocket className="w-5 h-5 text-muted-foreground" />
+            </button>
+          </div>
+          
+          <div className="text-right">
+            <p className="font-body text-[10px] text-muted-foreground/70 tracking-wider uppercase">
+              © 2024 Design. Made in Space.
+            </p>
+            <p className="font-body text-[10px] text-muted-foreground/50 tracking-wider">
+              📍 Singularity, Null
             </p>
           </div>
-        )}
+        </div>
+      </div>
+      
+      {/* Bottom status */}
+      <div className="fixed bottom-8 right-8 flex items-center gap-2 text-muted-foreground/50 font-body text-xs tracking-wider">
+        <span>System Offline</span>
+        <Rocket className="w-4 h-4" />
       </div>
     </section>
   );

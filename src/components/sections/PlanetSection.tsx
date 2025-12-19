@@ -1,43 +1,50 @@
 import { useState } from 'react';
+import { Link2, Bitcoin, Lock } from 'lucide-react';
 
 interface Project {
   id: number;
   title: string;
   description: string;
   tags: string[];
+  icon: 'link' | 'bitcoin' | 'lock';
   link?: string;
 }
 
 const PROJECTS: Project[] = [
   {
     id: 1,
-    title: "Project Alpha",
-    description: "A revolutionary web application that pushes the boundaries of modern design and functionality.",
-    tags: ["React", "TypeScript", "Three.js"],
+    title: "Nebula Explorer",
+    description: "Real-time WebGL visualization of star clusters using raymarching techniques to render volumetric nebulae.",
+    tags: ["THREE.JS", "REACT", "WEBGL"],
+    icon: 'link',
     link: "#",
   },
   {
     id: 2,
-    title: "Stellar Interface",
-    description: "An immersive user experience designed for the next generation of digital explorers.",
-    tags: ["Next.js", "Framer Motion", "Tailwind"],
+    title: "Orbit Finance",
+    description: "DeFi dashboard visualizing liquidity pools with gravitational physics interactions and real-time market data.",
+    tags: ["SOLIDITY", "D3.JS", "WEB3"],
+    icon: 'bitcoin',
     link: "#",
   },
   {
     id: 3,
-    title: "Nebula Engine",
-    description: "High-performance graphics engine for creating stunning visual experiences.",
-    tags: ["WebGL", "GLSL", "Canvas"],
-    link: "#",
-  },
-  {
-    id: 4,
-    title: "Cosmic Dashboard",
-    description: "Data visualization platform that transforms complex data into beautiful insights.",
-    tags: ["D3.js", "Node.js", "PostgreSQL"],
+    title: "Void Chat",
+    description: "End-to-end encrypted messaging platform designed for zero-latency communication across distributed nodes.",
+    tags: ["SOCKET.IO", "NODE.JS", "REDIS"],
+    icon: 'lock',
     link: "#",
   },
 ];
+
+const ProjectIcon = ({ type }: { type: 'link' | 'bitcoin' | 'lock' }) => {
+  const iconClass = "w-5 h-5 text-muted-foreground";
+  switch (type) {
+    case 'bitcoin': return <Bitcoin className={iconClass} />;
+    case 'lock': return <Lock className={iconClass} />;
+    default: return <Link2 className={iconClass} />;
+  }
+};
 
 interface PlanetSectionProps {
   progress: number;
@@ -47,49 +54,48 @@ interface PlanetSectionProps {
 export const PlanetSection = ({ progress, isActive }: PlanetSectionProps) => {
   const [hoveredProject, setHoveredProject] = useState<number | null>(null);
   
-  // Stagger project appearances based on progress
   const getProjectOpacity = (index: number) => {
-    const threshold = index * 0.2;
-    return Math.max(0, Math.min(1, (progress - threshold) / 0.3));
+    const threshold = index * 0.15;
+    return Math.max(0, Math.min(1, (progress - threshold) / 0.25));
   };
   
   const getProjectTransform = (index: number) => {
-    const threshold = index * 0.2;
-    const projectProgress = Math.max(0, Math.min(1, (progress - threshold) / 0.3));
-    return `translateY(${(1 - projectProgress) * 50}px)`;
+    const threshold = index * 0.15;
+    const projectProgress = Math.max(0, Math.min(1, (progress - threshold) / 0.25));
+    return `translateY(${(1 - projectProgress) * 40}px)`;
   };
   
   return (
     <section 
-      className="min-h-screen flex items-center justify-center py-20 px-4 md:px-8"
+      className="min-h-screen flex items-start justify-end py-24 px-4 md:px-8 lg:px-16"
       style={{
         opacity: isActive ? 1 : 0,
         transition: 'opacity 0.3s ease-out',
       }}
     >
-      <div className="max-w-6xl w-full">
+      <div className="max-w-lg w-full">
         {/* Section header */}
         <div 
-          className="text-center mb-12"
+          className="text-right mb-8"
           style={{
-            opacity: progress > 0.1 ? 1 : 0,
-            transform: progress > 0.1 ? 'translateY(0)' : 'translateY(30px)',
+            opacity: progress > 0.05 ? 1 : 0,
+            transform: progress > 0.05 ? 'translateY(0)' : 'translateY(20px)',
             transition: 'all 0.5s ease-out',
           }}
         >
-          <p className="text-primary font-body text-sm tracking-[0.3em] uppercase mb-2">
-            Orbiting Planet Nova
-          </p>
-          <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-foreground text-glow-cyan">
-            My Projects
+          <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-2">
+            Mission Logs
           </h2>
-          <p className="mt-4 text-muted-foreground font-body max-w-lg mx-auto">
-            Discoveries made during my journey through the cosmos of code and creativity.
-          </p>
+          <div className="flex items-center justify-end gap-2 text-muted-foreground">
+            <span className="text-lg">📁</span>
+            <span className="font-body text-xs tracking-[0.15em] uppercase">
+              Archive // Projects
+            </span>
+          </div>
         </div>
         
-        {/* Projects grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Projects list */}
+        <div className="space-y-4">
           {PROJECTS.map((project, index) => (
             <div
               key={project.id}
@@ -102,39 +108,31 @@ export const PlanetSection = ({ progress, isActive }: PlanetSectionProps) => {
               onMouseEnter={() => setHoveredProject(project.id)}
               onMouseLeave={() => setHoveredProject(null)}
             >
-              {/* Hover glow effect */}
+              {/* Hover glow */}
               <div 
-                className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
               />
               
-              {/* Content */}
               <div className="relative z-10">
-                <div className="flex items-start justify-between mb-4">
-                  <h3 className="font-display text-xl md:text-2xl font-semibold text-foreground group-hover:text-primary transition-colors">
+                {/* Title with icon */}
+                <div className="flex items-center justify-center gap-3 mb-3">
+                  <h3 className="font-display text-xl font-semibold text-foreground text-center">
                     {project.title}
                   </h3>
-                  <svg 
-                    width="24" 
-                    height="24" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    strokeWidth="2"
-                    className="text-muted-foreground group-hover:text-primary group-hover:translate-x-1 group-hover:-translate-y-1 transition-all"
-                  >
-                    <path d="M7 17L17 7M17 7H7M17 7V17" />
-                  </svg>
+                  <ProjectIcon type={project.icon} />
                 </div>
                 
-                <p className="text-muted-foreground font-body text-sm md:text-base mb-4 leading-relaxed">
+                {/* Description */}
+                <p className="text-muted-foreground font-body text-sm text-center leading-relaxed mb-4">
                   {project.description}
                 </p>
                 
-                <div className="flex flex-wrap gap-2">
+                {/* Tags */}
+                <div className="flex flex-wrap justify-center gap-2">
                   {project.tags.map((tag) => (
                     <span 
                       key={tag}
-                      className="px-3 py-1 text-xs font-body bg-secondary text-secondary-foreground rounded-full"
+                      className="px-3 py-1 text-[10px] font-body border border-border/50 text-muted-foreground rounded-full tracking-wider"
                     >
                       {tag}
                     </span>
@@ -144,29 +142,65 @@ export const PlanetSection = ({ progress, isActive }: PlanetSectionProps) => {
               
               {/* Border glow on hover */}
               <div 
-                className="absolute inset-0 rounded-xl border border-primary/0 group-hover:border-primary/50 transition-colors duration-300"
+                className="absolute inset-0 rounded-xl border border-primary/0 group-hover:border-primary/30 transition-colors duration-300"
                 style={{
                   boxShadow: hoveredProject === project.id 
-                    ? '0 0 30px hsl(var(--primary) / 0.3), inset 0 0 30px hsl(var(--primary) / 0.1)' 
+                    ? '0 0 20px hsl(var(--primary) / 0.2), inset 0 0 20px hsl(var(--primary) / 0.05)' 
                     : 'none',
                 }}
               />
             </div>
           ))}
         </div>
-        
-        {/* CTA */}
-        <div 
-          className="text-center mt-12"
-          style={{
-            opacity: progress > 0.8 ? 1 : 0,
-            transition: 'opacity 0.5s ease-out',
-          }}
-        >
-          <button className="btn-cosmic text-primary">
-            View All Projects
-          </button>
+      </div>
+      
+      {/* Left side status panel */}
+      <div 
+        className="fixed left-8 bottom-32 max-w-xs"
+        style={{
+          opacity: progress > 0.3 ? (progress - 0.3) * 2 : 0,
+          transition: 'opacity 0.5s ease-out',
+        }}
+      >
+        <div className="glass rounded-lg p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-2 h-2 rounded-full bg-primary" />
+            <span className="font-body text-xs tracking-[0.15em] uppercase text-primary">
+              System Status
+            </span>
+          </div>
+          <p className="font-body text-xs text-muted-foreground leading-relaxed">
+            Planetary scan complete. Several artifacts detected in sector 7G. Approaching data clusters.
+          </p>
         </div>
+      </div>
+      
+      {/* Bottom navigation */}
+      <div className="fixed bottom-8 left-8 right-8 flex items-center justify-between">
+        <button className="flex items-center gap-2 text-muted-foreground font-body text-xs tracking-wider hover:text-foreground transition-colors">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+          ORBIT VIEW
+        </button>
+        
+        {/* Progress bar */}
+        <div className="flex items-center gap-3">
+          <div className="w-32 h-1 bg-border/30 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-primary rounded-full transition-all duration-300"
+              style={{ width: `${progress * 100}%` }}
+            />
+          </div>
+          <span className="font-body text-xs text-muted-foreground">SEC-03 LOADING</span>
+        </div>
+        
+        <button className="flex items-center gap-2 text-primary font-body text-xs tracking-wider hover:text-foreground transition-colors">
+          APPROACH HORIZON
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
+        </button>
       </div>
     </section>
   );
