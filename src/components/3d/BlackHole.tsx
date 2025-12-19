@@ -1,6 +1,5 @@
-import { useRef, useMemo, Suspense } from 'react';
+import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
 interface BlackHoleProps {
@@ -8,8 +7,7 @@ interface BlackHoleProps {
   visible?: boolean;
 }
 
-// Procedural fallback black hole
-const ProceduralBlackHole = ({ pullStrength = 0, visible = true }: BlackHoleProps) => {
+export const BlackHole = ({ pullStrength = 0, visible = true }: BlackHoleProps) => {
   const groupRef = useRef<THREE.Group>(null);
   const diskRef = useRef<THREE.Mesh>(null);
 
@@ -81,11 +79,13 @@ const ProceduralBlackHole = ({ pullStrength = 0, visible = true }: BlackHoleProp
 
   return (
     <group ref={groupRef} position={[0, 0, -50]}>
+      {/* Event horizon (black sphere) */}
       <mesh>
         <sphereGeometry args={[1.8, 32, 32]} />
         <meshBasicMaterial color="black" />
       </mesh>
       
+      {/* Inner glow ring */}
       <mesh>
         <ringGeometry args={[1.8, 2.2, 64]} />
         <meshBasicMaterial
@@ -97,8 +97,10 @@ const ProceduralBlackHole = ({ pullStrength = 0, visible = true }: BlackHoleProp
         />
       </mesh>
       
+      {/* Accretion disk */}
       <mesh ref={diskRef} geometry={diskGeometry} material={diskMaterial} />
       
+      {/* Outer glow */}
       <mesh position={[0, 0, -0.1]}>
         <ringGeometry args={[8, 15, 64]} />
         <meshBasicMaterial
@@ -110,6 +112,7 @@ const ProceduralBlackHole = ({ pullStrength = 0, visible = true }: BlackHoleProp
         />
       </mesh>
 
+      {/* Gravitational lensing effect (distortion ring) */}
       <mesh>
         <torusGeometry args={[2, 0.1, 16, 100]} />
         <meshBasicMaterial
@@ -122,39 +125,3 @@ const ProceduralBlackHole = ({ pullStrength = 0, visible = true }: BlackHoleProp
     </group>
   );
 };
-
-// GLTF model black hole
-const GLTFBlackHole = ({ pullStrength = 0, visible = true }: BlackHoleProps) => {
-  const groupRef = useRef<THREE.Group>(null);
-  const { scene } = useGLTF('/models/blackhole.glb');
-  
-  const clonedScene = useMemo(() => scene.clone(), [scene]);
-
-  useFrame(() => {
-    if (!groupRef.current) return;
-    
-    groupRef.current.rotation.z += 0.002;
-    
-    const scale = 5 + pullStrength * 2;
-    groupRef.current.scale.setScalar(scale);
-    groupRef.current.rotation.x = Math.PI * 0.2;
-  });
-
-  if (!visible) return null;
-
-  return (
-    <group ref={groupRef} position={[0, 0, -50]}>
-      <primitive object={clonedScene} />
-    </group>
-  );
-};
-
-export const BlackHole = (props: BlackHoleProps) => {
-  return (
-    <Suspense fallback={<ProceduralBlackHole {...props} />}>
-      <GLTFBlackHole {...props} />
-    </Suspense>
-  );
-};
-
-useGLTF.preload('/models/blackhole.glb');
