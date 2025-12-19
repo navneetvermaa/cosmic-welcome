@@ -1,6 +1,5 @@
-import { useRef, useMemo, Suspense } from 'react';
+import { useRef, useMemo, useState, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
 interface StarFieldProps {
@@ -9,15 +8,13 @@ interface StarFieldProps {
   isWarping?: boolean;
 }
 
-// Procedural fallback starfield
-const ProceduralStarField = ({ count = 3000, warpSpeed = 0, isWarping = false }: StarFieldProps) => {
+export const StarField = ({ count = 3000, warpSpeed = 0, isWarping = false }: StarFieldProps) => {
   const pointsRef = useRef<THREE.Points>(null);
   const materialRef = useRef<THREE.PointsMaterial>(null);
 
-  const [positions, colors, sizes] = useMemo(() => {
+  const [positions, colors] = useMemo(() => {
     const positions = new Float32Array(count * 3);
     const colors = new Float32Array(count * 3);
-    const sizes = new Float32Array(count);
 
     for (let i = 0; i < count; i++) {
       const theta = Math.random() * Math.PI * 2;
@@ -41,11 +38,9 @@ const ProceduralStarField = ({ count = 3000, warpSpeed = 0, isWarping = false }:
         colors[i * 3 + 1] = 0.3;
         colors[i * 3 + 2] = 1;
       }
-
-      sizes[i] = Math.random() * 2 + 0.5;
     }
 
-    return [positions, colors, sizes];
+    return [positions, colors];
   }, [count]);
 
   useFrame((state, delta) => {
@@ -83,12 +78,6 @@ const ProceduralStarField = ({ count = 3000, warpSpeed = 0, isWarping = false }:
           array={colors}
           itemSize={3}
         />
-        <bufferAttribute
-          attach="attributes-size"
-          count={count}
-          array={sizes}
-          itemSize={1}
-        />
       </bufferGeometry>
       <pointsMaterial
         ref={materialRef}
@@ -102,35 +91,3 @@ const ProceduralStarField = ({ count = 3000, warpSpeed = 0, isWarping = false }:
     </points>
   );
 };
-
-// GLTF model starfield
-const GLTFStarField = ({ warpSpeed = 0, isWarping = false }: StarFieldProps) => {
-  const groupRef = useRef<THREE.Group>(null);
-  const { scene } = useGLTF('/models/starfield.glb');
-  
-  const clonedScene = useMemo(() => scene.clone(), [scene]);
-
-  useFrame((state, delta) => {
-    if (!groupRef.current) return;
-    
-    const speed = isWarping ? warpSpeed * 2 : 0.1;
-    groupRef.current.rotation.z += delta * 0.02;
-    groupRef.current.rotation.y += delta * speed * 0.1;
-  });
-
-  return (
-    <group ref={groupRef} position={[0, 0, 0]}>
-      <primitive object={clonedScene} scale={15} />
-    </group>
-  );
-};
-
-export const StarField = (props: StarFieldProps) => {
-  return (
-    <Suspense fallback={<ProceduralStarField {...props} />}>
-      <GLTFStarField {...props} />
-    </Suspense>
-  );
-};
-
-useGLTF.preload('/models/starfield.glb');
